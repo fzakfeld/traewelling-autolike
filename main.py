@@ -10,6 +10,7 @@ logging.basicConfig(filename=config['logfile'], level=logging.INFO)
 
 token = config['token']
 friends = config['friends']
+excluded_lines = config['excluded_lines']
 
 api_base_url = config['api_base_url']
 auth_header = {
@@ -34,6 +35,7 @@ def main():
         status_id: int = status['id']
         is_liked: bool = status['liked']
         user: str = status['userDetails']['username']
+        line_name: str = status['train']['lineName']
 
         if is_liked == True:
             continue
@@ -41,6 +43,16 @@ def main():
         if user not in friends:
             continue
 
+        excluded = False
+        for excluded_line in excluded_lines:
+            if excluded_line in line_name:
+                excluded = True
+                break
+
+        if excluded:
+            continue
+
+        print(line_name)
         create_like(status_id)
         sleep(1)
     sleep(1)
